@@ -1,0 +1,9 @@
+{
+    "target_overrides": {
+        "*": {
+            "mcuboot.bootloader-build": 0,
+            "target.mbed_app_start": "0x20000",
+            "target.mbed_app_size": "0xDC000"
+        }
+    }
+}
