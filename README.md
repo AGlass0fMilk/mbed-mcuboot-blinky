@@ -13,13 +13,13 @@ Briefly, the bootloader has a maximum size set by `target.restrict_size` when bu
 
 ### Application Header Info
 
-When deciding what to boot/update, the mcuboot bootloader looks at an installed application's header info (type-length-value formatted data that is prepended to the application binary before the application's start address). It uses this header info to validate there is a bootable image installed in the "slot" and optionally to verify the image's digital signature before booting.
+When deciding what to boot/update, the mcuboot bootloader looks at an installed application's header info, which is a special struct prepended to the application binary. It uses this header info to validate there is a bootable image installed in the "slot". There are also type-length-value (TLV) encoded pieces of information following the application binary called the "application trailer". These TLV encoded values include things like a digital signature and SHA hash, among other things. See mcuboot documentation for more information.
 
-By default, this header is configured to be 1kB in size. This is probably way more than needed in most cases and can be adjusted using the configuration parameter `mcuboot.header_size`. This value should be aligned on 4-byte boundaries.
+By default, this header is configured to be 4kB in size. ~~This is probably way more than needed in most cases and can be adjusted using the configuration parameter `mcuboot.header_size`. This value should be aligned on 4-byte boundaries.~~ **NOTE:** Due to the way the FlashIAP block device currently works while erasing, the header_size should be configured to be the size of an erase sector (4kB in the case of an nRF52840). Erasing using the FlashIAPBlockDevice only works if the given address is erase-sector aligned!
 
-This header prepended to the application hex during the signing process (explained later).
+This header prepended to the application hex during the signing process (explained later). The trailer is also appended to the application hex during signing.
 
-Please note: the bootloader size should be restricted to ensure it does not collide with the application header info. For example, if the application start address is set to `0x20000` and the header size is `0x400`, the bootloader size should be restricted to at most `0x20000 - 0x400 = 0x1FC00`.
+~~Please note: the bootloader size should be restricted to ensure it does not collide with the application header info. For example, if the application start address is set to `0x20000` and the header size is `0x400`, the bootloader size should be restricted to at most `0x20000 - 0x400 = 0x1FC00`.~~ **NOTE:** Currently, the bootloader size should be restricted to match the application start address. This could cause issues if the bootloader fills this space exactly (and overwrites the application header area). Potential solution: Add `MBED_CONF_MCUBOOT_HEADER_SIZE` to `POST_APPLICATION_ADDR` to get the actual start address of the application...
 
 ### Primary Application
 
@@ -58,8 +58,6 @@ Additionally, the application start location and maximum allowed size should be 
     }
 }
 ```
-
-
 
 The example project contains an application that repeatedly blinks an LED on supported [Mbed boards](https://os.mbed.com/platforms/).
 

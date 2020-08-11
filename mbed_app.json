@@ -4,6 +4,12 @@
             "mcuboot.bootloader-build": 0,
             "target.mbed_app_start": "0x20000",
             "target.mbed_app_size": "0xDC000"
+        },
+        "NRF52840_DK": {
+            "mcuboot.max-img-sectors": 256
+        },
+        "EP_AGORA": {
+            "mcuboot.max-img-sectors": 256
         }
     }
 }
