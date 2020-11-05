@@ -7,6 +7,7 @@
 #include "mbed.h"
 
 #include "bootutil/bootutil.h"
+#include "bootutil/image.h"
 #include "FlashIAP/FlashIAPBlockDevice.h"
 #include "drivers/InterruptIn.h"
 
@@ -18,8 +19,6 @@ mbed::BlockDevice* get_secondary_bd(void) {
     static mbed::SlicingBlockDevice sliced_bd(default_bd, 0x0, MCUBOOT_SLOT_SIZE);
     return &sliced_bd;
 }
-
-const static char version[] = "1.0";
 
 int main()
 {
@@ -43,7 +42,16 @@ int main()
 
     InterruptIn btn(DEMO_BUTTON);
 
-    tr_info("Hello version %s", version);
+    // Get the current version from the mcuboot header information
+    struct image_version version;
+    ret = boot_get_current_version(&version);
+    if(ret == 0) {
+        tr_info("Hello version %d.%d.%d+%lu", version.iv_major, version.iv_minor,
+                                              version.iv_revision, version.iv_build_num);
+    } else {
+        tr_error("Failed to load version information: %d", ret);
+    }
+
 
     // Erase secondary slot
     // On the first boot, the secondary BlockDevice needs to be clean
@@ -86,8 +94,7 @@ int main()
     }
 
     // Copy the update image from internal flash to secondary BlockDevice
-    // This is a "hack" that requires you to preload the update image (i.e. with pyocd flash -a <address> <image>.bin)
-    // TODO: Use Serial OTA to fetch image
+    // This is a "hack" that requires you to preload the update image into `mcuboot.primary-slot-address` + 0x40000
 
     FlashIAPBlockDevice fbd(MCUBOOT_PRIMARY_SLOT_START_ADDR + 0x40000, 0x20000);
     ret = fbd.init();
