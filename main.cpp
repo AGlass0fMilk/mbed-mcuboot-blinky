@@ -42,17 +42,6 @@ int main()
 
     InterruptIn btn(DEMO_BUTTON);
 
-    // Get the current version from the mcuboot header information
-    struct image_version version;
-    ret = boot_get_current_version(&version);
-    if(ret == 0) {
-        tr_info("Hello version %d.%d.%d+%lu", version.iv_major, version.iv_minor,
-                                              version.iv_revision, version.iv_build_num);
-    } else {
-        tr_error("Failed to load version information: %d", ret);
-    }
-
-
     // Erase secondary slot
     // On the first boot, the secondary BlockDevice needs to be clean
     // If the first boot is not normal, please run the erase step, then reboot
