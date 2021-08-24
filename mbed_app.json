@@ -2,7 +2,8 @@
     "config": {
         "demo-button": {
             "macro_name": "DEMO_BUTTON",
-            "required": true
+            "required": true,
+            "value": "BUTTON1"
         },
         "demo-button-active-low": {
             "help": "true if the button state is low when pressed, high when released",
@@ -18,7 +19,6 @@
             "mbed-trace.enable": true
         },
         "NRF52840_DK": {
-            "demo-button": "BUTTON1",
             "demo-button-active-low": true,
             "target.mbed_app_start": "0x21000",
             "target.mbed_app_size": "0xBE000",
@@ -31,7 +31,6 @@
             "qspif.QSPI_MIN_PROG_SIZE": 4
         },
         "EP_AGORA": {
-            "demo-button": "BUTTON1",
             "demo-button-active-low": true,
             "target.mbed_app_start": "0x21000",
             "target.mbed_app_size": "0xBE000",
@@ -44,7 +43,6 @@
             "qspif.QSPI_MIN_PROG_SIZE": 4
         },
         "DISCO_L475VG_IOT01A": {
-            "demo-button": "USER_BUTTON",
             "demo-button-active-low": true,
             "target.mbed_app_start": "0x8021000",
             "target.mbed_app_size": "0xBE000",
