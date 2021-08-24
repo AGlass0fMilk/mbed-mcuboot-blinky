@@ -15,6 +15,7 @@
         "*": {
             "mcuboot.bootloader-build": 0,
             "target.c_lib": "small",
+            "target.OUTPUT_EXT": "hex",
             "mcuboot.log-level": "MCUBOOT_LOG_LEVEL_DEBUG",
             "mbed-trace.enable": true
         },
