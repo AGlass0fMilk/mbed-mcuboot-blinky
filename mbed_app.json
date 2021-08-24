@@ -2,7 +2,8 @@
     "config": {
         "demo-button": {
             "macro_name": "DEMO_BUTTON",
-            "required": true
+            "required": true,
+            "value": "BUTTON1"
         },
         "demo-button-active-low": {
             "help": "true if the button state is low when pressed, high when released",
@@ -14,11 +15,11 @@
         "*": {
             "mcuboot.bootloader-build": 0,
             "target.c_lib": "small",
+            "target.OUTPUT_EXT": "hex",
             "mcuboot.log-level": "MCUBOOT_LOG_LEVEL_DEBUG",
             "mbed-trace.enable": true
         },
         "NRF52840_DK": {
-            "demo-button": "BUTTON1",
             "demo-button-active-low": true,
             "target.mbed_app_start": "0x21000",
             "target.mbed_app_size": "0xBE000",
@@ -31,7 +32,6 @@
             "qspif.QSPI_MIN_PROG_SIZE": 4
         },
         "EP_AGORA": {
-            "demo-button": "BUTTON1",
             "demo-button-active-low": true,
             "target.mbed_app_start": "0x21000",
             "target.mbed_app_size": "0xBE000",
@@ -44,7 +44,6 @@
             "qspif.QSPI_MIN_PROG_SIZE": 4
         },
         "DISCO_L475VG_IOT01A": {
-            "demo-button": "USER_BUTTON",
             "demo-button-active-low": true,
             "target.mbed_app_start": "0x8021000",
             "target.mbed_app_size": "0xBE000",
@@ -52,9 +51,7 @@
             "mcuboot.slot-size": "0xC0000",
             "mcuboot.scratch-address": "0x80E0000",
             "mcuboot.scratch-size": "0x20000",
-            "mcuboot.max-img-sectors": "0x180",
-            "mcuboot.read-granularity": 4,
-            "qspif.QSPI_MIN_PROG_SIZE": 4
+            "mcuboot.max-img-sectors": "0x180"
         }
     }
 }
