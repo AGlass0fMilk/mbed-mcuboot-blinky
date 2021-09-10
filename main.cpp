@@ -9,6 +9,7 @@
 #include "bootutil/bootutil.h"
 #include "bootutil/image.h"
 #include "FlashIAP/FlashIAPBlockDevice.h"
+#include "blockdevice/SlicingBlockDevice.h"
 #include "drivers/InterruptIn.h"
 
 #define TRACE_GROUP "main"
