@@ -10,6 +10,7 @@
 #include "bootutil/image.h"
 #include "FlashIAP/FlashIAPBlockDevice.h"
 #include "drivers/InterruptIn.h"
+#include "DataShare.h"	
 
 #define TRACE_GROUP "main"
 #include "mbed-trace/mbed_trace.h"
@@ -20,11 +21,49 @@ mbed::BlockDevice* get_secondary_bd(void) {
     return &sliced_bd;
 }
 
+static const char *data_share_err_descs[] = {
+        "OK",
+        "reached EOF",
+        "buffer too small",
+        "data corrupt"
+};
+
 int main()
 {
     // Enable traces from relevant trace groups
     mbed_trace_init();
     mbed_trace_include_filters_set("main,MCUb,BL");
+
+#if defined(MCUBOOT_DATA_SHARING)
+    /* Print out the shared data */
+    DataShare data_share;
+
+    tr_info("data share is %s", data_share.is_valid()? "valid" : "invalid");
+    if(data_share.is_valid()) {
+        tr_info("data share total size: %u", data_share.get_total_size());
+        int result = DATA_SHARE_OK;
+        uint16_t type = 0;
+        uint8_t buf[128] = {0};
+        uint16_t len = 0;
+        do {
+            result = data_share.get_next(&type, mbed::make_Span(buf), &len);
+            if(result == DATA_SHARE_OK) {
+                char temp[17];
+                tr_info("data share entry: type=0x%X, length=%u", type, len);
+                memcpy(temp, buf, 16);
+                temp[16] = 0;
+                tr_info("\tdata: %s%s", temp, (strlen(temp) == 16)? "..." : "");
+            }
+        } while(result == DATA_SHARE_OK);
+
+        if(result > 3) {
+            result = 3;
+        }
+
+        tr_info("done iterating through shared data (reason: %s)", data_share_err_descs[result]);
+    }
+
+#endif
 
     /**
      *  Do whatever is needed to verify the firmware is okay
