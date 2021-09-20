@@ -9,6 +9,11 @@
             "help": "true if the button state is low when pressed, high when released",
             "macro_name": "DEMO_BUTTON_ACTIVE_LOW",
             "required": false
+        },
+	"mbed_app_start": {
+            "help": "Use a custom application start address",
+            "macro_name": "MBED_APP_START",
+            "required": true
         }
     },
     "target_overrides": {
@@ -21,7 +26,7 @@
         },
         "NRF52840_DK": {
             "demo-button-active-low": true,
-            "target.mbed_app_start": "0x21000",
+            "mbed_app_start": "0x21000",
             "target.mbed_app_size": "0xBE000",
             "mcuboot.primary-slot-address": "0x20000",
             "mcuboot.slot-size": "0xC0000",
@@ -33,7 +38,7 @@
         },
         "EP_AGORA": {
             "demo-button-active-low": true,
-            "target.mbed_app_start": "0x21000",
+            "mbed_app_start": "0x21000",
             "target.mbed_app_size": "0xBE000",
             "mcuboot.primary-slot-address": "0x20000",
             "mcuboot.slot-size": "0xC0000",
@@ -45,7 +50,7 @@
         },
         "DISCO_L475VG_IOT01A": {
             "demo-button-active-low": true,
-            "target.mbed_app_start": "0x8021000",
+            "mbed_app_start": "0x8021000",
             "target.mbed_app_size": "0xBE000",
             "mcuboot.primary-slot-address": "0x8020000",
             "mcuboot.slot-size": "0xC0000",
