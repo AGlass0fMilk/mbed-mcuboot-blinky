@@ -9,6 +9,7 @@
 #include "bootutil/bootutil.h"
 #include "bootutil/image.h"
 #include "FlashIAP/FlashIAPBlockDevice.h"
+#include "blockdevice/SlicingBlockDevice.h"
 #include "drivers/InterruptIn.h"
 
 #define TRACE_GROUP "main"
@@ -26,21 +27,52 @@ int main()
     mbed_trace_init();
     mbed_trace_include_filters_set("main,MCUb,BL");
 
-    /**
-     *  Do whatever is needed to verify the firmware is okay
-     *  (eg: self test, connect to server, etc)
-     *
-     *  And then mark that the update succeeded
-     */
-    //run_self_test();
-    int ret = boot_set_confirmed();
-    if (ret == 0) {
-        tr_info("Boot confirmed");
-    } else {
-        tr_error("Failed to confirm boot: %d", ret);
-    }
-
     InterruptIn btn(DEMO_BUTTON);
+
+    // Check if an update has been performed
+    int swap_type = boot_swap_type();
+    int ret;
+    switch(swap_type) {
+        case BOOT_SWAP_TYPE_NONE:
+            tr_info("Regular boot");
+            break;
+
+        case BOOT_SWAP_TYPE_REVERT:
+            // After MCUboot has swapped a (non-permanent) update image
+            // into the primary slot, it defaults to reverting the image on the NEXT boot.
+            // This is why we see "[INFO][MCUb]: Swap type: revert" which can be misleading.
+            // Confirming the CURRENT boot dismisses the reverting.
+            tr_info("Firmware update applied successfully");
+
+            // Do whatever is needed to verify the firmware is okay (eg: self test)
+            // then mark the update as successful. Here we let the user press a button.
+            tr_info("Press the button to confirm, or reboot to revert the update");
+#if DEMO_BUTTON_ACTIVE_LOW
+            while (btn) {
+#else
+            while (!btn) {
+#endif
+                sleep();
+            }
+
+            ret = boot_set_confirmed();
+            if (ret == 0) {
+                tr_info("Current firmware set as confirmed");
+                return 0;
+            } else {
+                tr_error("Failed to confirm the firmware: %d", ret);
+            }
+            break;
+
+        // Note: Below are intermediate states of MCUboot and
+        // should never reach the application...
+        case BOOT_SWAP_TYPE_FAIL:   // Unable to boot due to invalid image
+        case BOOT_SWAP_TYPE_PERM:   // Permanent update requested (when signing the image) and to be performed
+        case BOOT_SWAP_TYPE_TEST:   // Revertable update requested and to be performed
+        case BOOT_SWAP_TYPE_PANIC:  // Unrecoverable error
+        default:
+            tr_error("Unexpected swap type: %d", swap_type);
+    }
 
     // Erase secondary slot
     // On the first boot, the secondary BlockDevice needs to be clean
